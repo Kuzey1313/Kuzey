@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f141e" />
+  <title>WebXR Quest 3 · El ile Gezinme · 1:70</title>
+  <link rel="stylesheet" href="./css/style.css" />
+
+  <!--
+    Import map: sabit sürümlü CDN bağlantıları. Yerel modüller göreli yol
+    ("./js/...") ile yüklendiği için GitHub Pages alt dizinlerinde
+    (https://kullanici.github.io/repo-adi/) değişiklik gerekmeden çalışır.
+  -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+      "@mediapipe/tasks-vision": "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs"
+    }
+  }
+  </script>
+  <script type="module" src="./js/main.js"></script>
+</head>
+<body>
+  <div id="app" aria-label="3B sahne"></div>
+
+  <header class="panel controls">
+    <div class="brand">
+      <strong>Hand Locomotion</strong>
+      <span class="badge">1:70</span>
+    </div>
+    <div class="buttons">
+      <button id="btn-vr" class="primary" disabled>VR kontrol ediliyor…</button>
+      <button id="btn-cam-start">Start Camera</button>
+      <button id="btn-cam-stop" disabled>Stop Camera</button>
+      <button id="btn-reset">Reset Position</button>
+    </div>
+    <label class="select">
+      Görünüm
+      <select id="sel-view">
+        <option value="human" selected>1:70 maket · insan perspektifi</option>
+        <option value="maquette">1:70 maket · maket görünümü (masadan bakış)</option>
+      </select>
+    </label>
+    <details class="help">
+      <summary>Kontroller</summary>
+      <ul>
+        <li><b>Başparmak + işaret</b> pinch → ileri yürü</li>
+        <li><b>Başparmak + serçe</b> pinch → sağa dön</li>
+        <li><b>Başparmak + yüzük</b> pinch → sola dön</li>
+        <li>Pinch yok → dur</li>
+        <li class="muted">Masaüstü debug: fare ile sürükle = bak, W/A/D veya oklar</li>
+      </ul>
+    </details>
+  </header>
+
+  <aside class="panel debug" aria-live="polite">
+    <h2>Debug</h2>
+    <dl>
+      <dt>XR oturumu</dt><dd id="dbg-xr">-</dd>
+      <dt>Referans alanı</dt><dd id="dbg-ref">-</dd>
+      <dt>Hand tracking</dt><dd id="dbg-hand">-</dd>
+      <dt>Algılanan el</dt><dd id="dbg-active-hand">-</dd>
+      <dt>Aktif pinch</dt><dd id="dbg-pinch">-</dd>
+      <dt>Normalize mesafe</dt><dd id="dbg-dist" class="mono">-</dd>
+      <dt>İleri hız</dt><dd id="dbg-fwd" class="mono">-</dd>
+      <dt>Rotasyon hızı</dt><dd id="dbg-rot" class="mono">-</dd>
+      <dt>Ölçek</dt><dd id="dbg-scale">-</dd>
+      <dt>Göz yüksekliği</dt><dd id="dbg-eye" class="mono">-</dd>
+      <dt>Konum</dt><dd id="dbg-pos" class="mono">-</dd>
+      <dt>FPS</dt><dd id="dbg-fps" class="mono">-</dd>
+    </dl>
+  </aside>
+
+  <section id="cam-panel" class="panel cam" hidden>
+    <div class="cam-view">
+      <video id="cam-video" playsinline muted></video>
+      <canvas id="cam-overlay"></canvas>
+    </div>
+  </section>
+
+  <div id="consent" class="modal" role="dialog" aria-modal="true" aria-labelledby="consent-title" hidden>
+    <div class="modal-card">
+      <h3 id="consent-title">Kamera erişimi</h3>
+      <p>
+        El hareketlerini algılamak için webcam görüntünüz <b>yalnızca bu tarayıcıda</b>
+        MediaPipe ile işlenir; görüntü hiçbir sunucuya gönderilmez. MediaPipe kütüphanesi
+        ve el modeli (~8 MB) CDN'den indirilir.
+      </p>
+      <p>Devam ederseniz tarayıcı ayrıca kamera izni isteyecek.</p>
+      <div class="modal-actions">
+        <button id="consent-cancel">Vazgeç</button>
+        <button id="consent-ok" class="primary">İzin ver ve başlat</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" role="status" hidden></div>
+
+  <noscript>Bu uygulama JavaScript gerektirir.</noscript>
+</body>
+</html>
